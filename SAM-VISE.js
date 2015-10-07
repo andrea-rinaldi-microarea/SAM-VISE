@@ -62,6 +62,8 @@ app.controller('SAMVISEController', function ($scope) {
   // partially inspired to a sample from RectangleWorld by DanGries (http://rectangleworld.com)
   //-----------------------------------------------------------------------------
 
+  var SIZE_DRAG_OFFSET = 10; // if the mouse is inside 10px from the border, size instead of move
+
   //-----------------------------------------------------------------------------
   function mouseDownListener(evt) {
     var i;
@@ -120,7 +122,6 @@ app.controller('SAMVISEController', function ($scope) {
 
   //-----------------------------------------------------------------------------
   function mouseMoveListener(evt) {
-    var SIZE_DRAG_OFFSET = 10; // if holding inside 10px from the border, size instead of move
     var spot = $scope.spots[dragIndex];
 
     //getting mouse position correctly
@@ -192,9 +193,29 @@ app.controller('SAMVISEController', function ($scope) {
 
   //-----------------------------------------------------------------------------
   function mouseHoverListener(evt) {
-     var rect = theCanvas.getBoundingClientRect();
-     console.log (evt.clientX, rect.left, evt.clientY, rect.top);
-   }
+    var rect = theCanvas.getBoundingClientRect();
+    mouseX = (evt.clientX - rect.left)*(theCanvas.width / rect.width);
+    mouseY = (evt.clientY - rect.top)*(theCanvas.height / rect.height);
+    hovered = null;
+    for (i = 0; i < $scope.spots.length; i++) {
+      if	(hitTest($scope.spots[i], mouseX, mouseY)) {
+       hovered = $scope.spots[i];
+      }
+    }
+    if (hovered) {
+      if (hovered.x + hovered.width - mouseX < SIZE_DRAG_OFFSET && hovered.y + hovered.height - mouseY >= SIZE_DRAG_OFFSET) {
+        theCanvas.style.cursor = 'ew-resize';
+      } else if (hovered.x + hovered.width - mouseX >= SIZE_DRAG_OFFSET && hovered.y + hovered.height - mouseY < SIZE_DRAG_OFFSET) {
+          theCanvas.style.cursor = 'ns-resize';
+      } else if (hovered.x + hovered.width - mouseX < SIZE_DRAG_OFFSET && hovered.y + hovered.height - mouseY < SIZE_DRAG_OFFSET) {
+          theCanvas.style.cursor = 'nwse-resize';
+      } else {
+        theCanvas.style.cursor = 'move';
+      }
+    } else {
+      theCanvas.style.cursor = 'inherit';
+    }
+  }
 
   // register the event listeners
   theCanvas.addEventListener("mousedown", mouseDownListener, false);

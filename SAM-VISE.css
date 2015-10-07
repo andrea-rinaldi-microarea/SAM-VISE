@@ -15,3 +15,17 @@ button {
     background-color: white;
     /*padding:5px 3px 5px 3px;*/
 }
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border: solid 1px black;
+}
+
+pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: black;
+}

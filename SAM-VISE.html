@@ -34,16 +34,21 @@
             <canvas id="theCanvas" style=" background-repeat:no-repeat;" width="800px" height="600px"></canvas>
         </div>
         <div>
-            <button ng-click="onCreate()">Nuovo spot</button>
-            <table>
-                <tr ng-repeat="spot in spots">
-                    <td>{{spot.x | number : 0}}</td>
-                    <td>{{spot.y | number : 0}}</td>
-                    <td>{{spot.height | number : 0}}</td>
-                    <td>{{spot.width | number : 0}}</td>
-                    <td>{{spot.name}}</td>
-                </tr>
-            </table>
+            <div style="margin-bottom:20px;">
+              <button ng-click="onCreate()">Nuovo spot</button>
+            </div>
+            <div style="margin-bottom:20px;">
+              <table>
+                  <tr ng-repeat="spot in spots">
+                      <td ng-click="onRemoveSpotClicked($index)" style="cursor:default"> X </td>
+                      <td>{{spot.x | number : 0}}</td>
+                      <td>{{spot.y | number : 0}}</td>
+                      <td>{{spot.height | number : 0}}</td>
+                      <td>{{spot.width | number : 0}}</td>
+                      <td>{{spot.name}}</td>
+                  </tr>
+              </table>
+            </div>
             <pre ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
         </div>
     </div>

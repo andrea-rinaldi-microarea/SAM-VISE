@@ -58,6 +58,11 @@ app.controller('SAMVISEController', function ($scope) {
   };
 
   //-----------------------------------------------------------------------------
+  $scope.onRemoveSpotClicked = function($index) {
+    $scope.spots.splice($index, 1);
+  };
+
+  //-----------------------------------------------------------------------------
   // canvas event listeners for dragging & resizing
   // partially inspired to a sample from RectangleWorld by DanGries (http://rectangleworld.com)
   //-----------------------------------------------------------------------------

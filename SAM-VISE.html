@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="en" ng-app="SAMVISE">
+
+<head>
+<meta charset="UTF-8">
+<title>SAM-VISE: SAM Visual Image Spot Editor</title>
+
+<!-- <script src="scripts/jquery-1.11.3.min.js"></script> -->
+<!-- <script src="scripts/jquery-1.11.3.js"></script> -->
+<!-- <script src="scripts/angular-1.4.7.min.js"></script> -->
+<script src="scripts/angular-1.4.7.js"></script>
+<script src="SAM-VISE.js"></script>
+
+<link href="sam1_1.css" rel="stylesheet" type="text/css" />
+<link href="SAM-VISE.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body class="singlepage_body">
+    <div ng-controller="SAMVISEController" class="container">
+        <div class="index_logo">
+            <img src="logo_accademia_top_83x83.gif" />
+        </div>
+        <div class="cover" >
+            <div >&nbsp;</div>
+            <div class="title">SAM-VISE: SAM Visual Image Spot Editor</div>
+            <div>&nbsp;</div>
+        </div>
+        <div style="margin-top:40px; margin-bottom:20px;">
+            <input type="file" style="display:none" id='inputFile' onchange="angular.element(this).scope().onFileChanged(this)" />
+            <button id="triggerFile" onclick="document.getElementById('inputFile').click()">Browse File</button>
+            {{fileName}}
+        </div>
+        <div style="margin-bottom:20px;">
+            <canvas id="theCanvas" style=" background-repeat:no-repeat;" width="800px" height="600px"></canvas>
+        </div>
+        <div>
+            <button ng-click="onCreate()">Nuovo spot</button>
+            <table>
+                <tr ng-repeat="spot in spots">
+                    <td>{{spot.x | number : 0}}</td>
+                    <td>{{spot.y | number : 0}}</td>
+                    <td>{{spot.height | number : 0}}</td>
+                    <td>{{spot.width | number : 0}}</td>
+                    <td>{{spot.name}}</td>
+                </tr>
+            </table>
+            <pre ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
+        </div>
+    </div>
+</body>
+</html>

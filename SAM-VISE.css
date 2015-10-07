@@ -1,0 +1,17 @@
+﻿@media screen{
+  .cover {
+    margin-bottom:40px;
+  }
+}
+
+.title {
+    font-size: 150%;
+}
+
+button {
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
+    font-size: large;
+    background-color: white;
+    /*padding:5px 3px 5px 3px;*/
+}

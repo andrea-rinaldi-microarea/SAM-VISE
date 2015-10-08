@@ -27,7 +27,7 @@
         </div>
         <div style="margin-top:40px; margin-bottom:20px;">
             <input type="file" style="display:none" id='inputFile' onchange="angular.element(this).scope().onFileChanged(this)" />
-            <button id="triggerFile" onclick="document.getElementById('inputFile').click()">Browse File</button>
+            <button id="triggerFile" onclick="document.getElementById('inputFile').click()">Carica Immagine</button>
             {{fileName}}
         </div>
         <div style="margin-bottom:20px;">
@@ -40,7 +40,7 @@
             <div style="margin-bottom:20px;">
               <table>
                   <tr ng-repeat="spot in spots">
-                      <td ng-click="onRemoveSpotClicked($index)" style="cursor:default"> X </td>
+                      <td ng-click="onRemoveSpotClicked($index)" style="cursor:default;"><img src="CloseX-31.png" style="width:16px;height:16px;" /></td>
                       <td>{{spot.x | number : 0}}</td>
                       <td>{{spot.y | number : 0}}</td>
                       <td>{{spot.height | number : 0}}</td>

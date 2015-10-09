@@ -8,6 +8,11 @@ app.controller('SAMVISEController', function ($scope) {
 
   $scope.spots = [];
   $scope.fileName = "";
+  $scope.spotName = {
+          template: "SP01",
+          radix: "SP",
+          mask: "00"
+      }
   var lastSpot = 0;
 
   //-----------------------------------------------------------------------------
@@ -49,11 +54,37 @@ app.controller('SAMVISEController', function ($scope) {
   };
 
   //-----------------------------------------------------------------------------
-  $scope.onCreate = function() {
+  function getNextSpotName() {
+      return $scope.spotName.radix + ($scope.spotName.mask + (++lastSpot).toString()).slice(-$scope.spotName.mask.length);
+  }
+
+  //-----------------------------------------------------------------------------
+  $scope.onSpotNameTemplateChanged = function () {
+      idx = $scope.spotName.template.search("[0-9]");
+    if (idx !== -1) {
+        $scope.spotName.radix = $scope.spotName.template.slice(0, idx);
+        progLen = $scope.spotName.template.length - idx;
+        lastSpot = parseInt($scope.spotName.template.slice(-progLen)) - 1;
+        $scope.spotName.mask = "";
+        for (i = 0; i < progLen; i++)
+            $scope.spotName.mask += "0";
+    } else {
+        $scope.spotName.radix = $scope.spotName.template;
+        $scope.spotName.mask = "00";
+        lastSpot = 0;
+    }
+
+    for (s = 0; s < $scope.spots.length; s++) {
+        $scope.spots[s].name = getNextSpotName();
+    }
+  }
+
+  //-----------------------------------------------------------------------------
+  $scope.onCreate = function () {
     defWidth = Math.min(theCanvas.width, 100);
     defHeight = Math.min(theCanvas.height, 50);
     // create the spot at the center of the canvas
-    $scope.spots.push({ name: "SP" + ("00" + (++lastSpot).toString()).slice(-2), x : (theCanvas.width - defWidth) / 2, y : (theCanvas.height - defHeight) / 2, width : defWidth, height : defHeight });
+    $scope.spots.push({ name: getNextSpotName(), x: (theCanvas.width - defWidth) / 2, y: (theCanvas.height - defHeight) / 2, width: defWidth, height: defHeight });
     drawSpots();
   };
 

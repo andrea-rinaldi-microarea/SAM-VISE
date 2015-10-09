@@ -34,20 +34,23 @@
             <canvas id="theCanvas" style=" background-repeat:no-repeat;" width="800px" height="600px"></canvas>
         </div>
         <div>
-            <div style="margin-bottom:20px;">
+            <div style="margin-bottom:10px;">
               <button ng-click="onCreate()">Nuovo spot</button>
+              parti da: <input type="text" ng-model="spotName.template" ng-change="onSpotNameTemplateChanged()" ng-model-options="{ updateOn: 'blur' }" />
             </div>
             <div style="margin-bottom:20px;">
-              <table>
-                  <tr ng-repeat="spot in spots">
-                      <td ng-click="onRemoveSpotClicked($index)" style="cursor:default;"><img src="CloseX-31.png" style="width:16px;height:16px;" /></td>
-                      <td>{{spot.x | number : 0}}</td>
-                      <td>{{spot.y | number : 0}}</td>
-                      <td>{{spot.height | number : 0}}</td>
-                      <td>{{spot.width | number : 0}}</td>
-                      <td>{{spot.name}}</td>
-                  </tr>
-              </table>
+                <div style="margin-bottom:10px;">
+                </div>
+                <table>
+                    <tr ng-repeat="spot in spots">
+                        <td ng-click="onRemoveSpotClicked($index)" style="cursor:default;"><img src="CloseX-31.png" style="width:16px;height:16px;" /></td>
+                        <td>{{spot.x | number : 0}}</td>
+                        <td>{{spot.y | number : 0}}</td>
+                        <td>{{spot.height | number : 0}}</td>
+                        <td>{{spot.width | number : 0}}</td>
+                        <td><input type="text" ng-model="spot.name" /></td>
+                    </tr>
+                </table>
             </div>
             <pre ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
         </div>

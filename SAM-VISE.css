@@ -2,6 +2,9 @@
   .cover {
     margin-bottom:40px;
   }
+  .singlepage_body {
+    max-width: 1000px;
+  }
 }
 
 .title {
@@ -20,7 +23,7 @@ table {
   border-collapse: collapse;
 }
 
-td {
+table#spots td {
   border: solid 1px black;
 }
 

@@ -31,28 +31,38 @@
             {{fileName}}
         </div>
         <div style="margin-bottom:20px;">
-            <canvas id="theCanvas" style=" background-repeat:no-repeat;" width="800px" height="600px"></canvas>
+            <canvas id="theCanvas" style=" background-repeat:no-repeat;" width="640px" height="480px"></canvas>
         </div>
         <div>
-            <div style="margin-bottom:10px;">
-              <button ng-click="onCreate()">Nuovo spot</button>
-              parti da: <input type="text" ng-model="spotName.template" ng-change="onSpotNameTemplateChanged()" ng-model-options="{ updateOn: 'blur' }" />
-            </div>
-            <div style="margin-bottom:20px;">
-                <div style="margin-bottom:10px;">
-                </div>
-                <table>
-                    <tr ng-repeat="spot in spots">
-                        <td ng-click="onRemoveSpotClicked($index)" style="cursor:default;"><img src="CloseX-31.png" style="width:16px;height:16px;" /></td>
-                        <td>{{spot.x | number : 0}}</td>
-                        <td>{{spot.y | number : 0}}</td>
-                        <td>{{spot.height | number : 0}}</td>
-                        <td>{{spot.width | number : 0}}</td>
-                        <td><input type="text" ng-model="spot.name" /></td>
-                    </tr>
+          <table style="border:0px; width:100%">
+            <tr>
+              <td style="width:50%">
+                <button ng-click="onCreate()">Nuovo spot</button>
+                parti da: <input type="text" ng-model="spotName.template" ng-change="onSpotNameTemplateChanged()" ng-model-options="{ updateOn: 'blur' }" />
+              </td>
+              <td style="width:50%">
+                Markdown
+              </td>
+            </tr>
+            <tr>
+              <td style="width:50%">
+                <table id="spots">
+                  <tr ng-repeat="spot in spots">
+                      <td ng-click="onRemoveSpotClicked($index)" style="cursor:default;"><img src="CloseX-31.png" style="width:16px;height:16px;" /></td>
+                      <td>{{spot.x | number : 0}}</td>
+                      <td>{{spot.y | number : 0}}</td>
+                      <td>{{spot.height | number : 0}}</td>
+                      <td>{{spot.width | number : 0}}</td>
+                      <td><input type="text" ng-model="spot.name" /></td>
+                  </tr>
                 </table>
-            </div>
-            <pre ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
+              </td>
+              <td style="width:50%">
+                <textarea style="width:100%;height:80px;resize:none" type="text" ng-show="spots.length == 0" ng-model="markdown" ng-change="onMarkdownChanged()"></textarea>
+                <pre style="width:100%" ng-show="spots.length != 0" ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
+              </td>
+            </tr>
+          </table>
         </div>
     </div>
 </body>

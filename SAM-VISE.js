@@ -6,14 +6,16 @@ app.controller('SAMVISEController', function ($scope) {
   var theCanvas = document.getElementById('theCanvas');
   var context = theCanvas.getContext("2d");
 
+  $scope.markdown = "";
   $scope.spots = [];
   $scope.fileName = "";
   $scope.spotName = {
           template: "SP01",
           radix: "SP",
           mask: "00"
-      }
+      };
   var lastSpot = 0;
+
 
   //-----------------------------------------------------------------------------
   function drawSpots() {
@@ -59,8 +61,8 @@ app.controller('SAMVISEController', function ($scope) {
   }
 
   //-----------------------------------------------------------------------------
-  $scope.onSpotNameTemplateChanged = function () {
-      idx = $scope.spotName.template.search("[0-9]");
+  function adjustSpotNameTemplate() {
+    idx = $scope.spotName.template.search("[0-9]");
     if (idx !== -1) {
         $scope.spotName.radix = $scope.spotName.template.slice(0, idx);
         progLen = $scope.spotName.template.length - idx;
@@ -73,11 +75,15 @@ app.controller('SAMVISEController', function ($scope) {
         $scope.spotName.mask = "00";
         lastSpot = 0;
     }
+  }
 
+  //-----------------------------------------------------------------------------
+  $scope.onSpotNameTemplateChanged = function () {
+    adjustSpotNameTemplate();
     for (s = 0; s < $scope.spots.length; s++) {
         $scope.spots[s].name = getNextSpotName();
     }
-  }
+  };
 
   //-----------------------------------------------------------------------------
   $scope.onCreate = function () {
@@ -94,11 +100,37 @@ app.controller('SAMVISEController', function ($scope) {
   };
 
   //-----------------------------------------------------------------------------
+  $scope.onMarkdownChanged = function() {
+    newSpots = [];
+    lines = $scope.markdown.split("\n");
+    lines.forEach(function(line) {
+       var match = "[IMGSPOT ";
+       if (line.indexOf(match) != -1) {
+         var coords = line.substr(0,line.length - 1).slice(match.length).split(/[-x ]/);
+         if (coords.length == 5)
+          newSpots.push({ name : coords[4].replace(/"/g,''), x : parseInt(coords[0]), y : parseInt(coords[1]), height : parseInt(coords[2]), width : parseInt(coords[3]) });
+       }
+    });
+    if (newSpots.length > 0) {
+      $scope.spots = newSpots;
+      $scope.spotName.template = $scope.spots[$scope.spots.length - 1].name;
+      adjustSpotNameTemplate();
+      lastSpot++;
+      $scope.spotName.template = getNextSpotName();
+      lastSpot--;
+      markdown = "";
+      drawSpots();
+    }
+
+  };
+
+  //-----------------------------------------------------------------------------
   // canvas event listeners for dragging & resizing
   // partially inspired to a sample from RectangleWorld by DanGries (http://rectangleworld.com)
   //-----------------------------------------------------------------------------
 
   var SIZE_DRAG_OFFSET = 10; // if the mouse is inside 10px from the border, size instead of move
+  var dragging = false;
 
   //-----------------------------------------------------------------------------
   function mouseDownListener(evt) {

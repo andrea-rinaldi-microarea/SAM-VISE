@@ -42,6 +42,7 @@
               </td>
               <td style="width:50%">
                 Markdown
+                  <button style="float: right;" ng-show="spots.length != 0" ng-click="onCopyClipboard()">Copia negli Appunti</button>
               </td>
             </tr>
             <tr>
@@ -59,7 +60,9 @@
               </td>
               <td style="width:50%">
                 <textarea style="width:100%;height:80px;resize:none" type="text" ng-show="spots.length == 0" ng-model="markdown" ng-change="onMarkdownChanged()"></textarea>
-                <pre style="width:100%" ng-show="spots.length != 0" ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
+                  <div id="resultMarkdown" ng-show="spots.length != 0" >
+                    <pre style="width:100%" ng-repeat="spot in spots">[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]</pre>
+                  </div>
               </td>
             </tr>
           </table>

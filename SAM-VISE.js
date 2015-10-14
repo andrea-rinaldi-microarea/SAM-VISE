@@ -16,12 +16,11 @@ app.controller('SAMVISEController', function ($scope) {
       };
   var lastSpot = 0;
 
-
   //-----------------------------------------------------------------------------
   function drawSpots() {
     context.clearRect(0, 0, theCanvas.width, theCanvas.height);
     context.globalAlpha = 0.15;
-    context.fillStyle = 'Crimson';
+    context.fillStyle = 'Green';
     $scope.spots.forEach(function(spot){
       context.fillRect(spot.x, spot.y, spot.width, spot.height);
     });
@@ -122,6 +121,20 @@ app.controller('SAMVISEController', function ($scope) {
       drawSpots();
     }
 
+  };
+
+  //-----------------------------------------------------------------------------
+  $scope.onCopyClipboard = function () {
+      resultMarkdown = document.querySelector('#resultMarkdown');
+
+      range = document.createRange();
+
+      range.selectNode(resultMarkdown);
+      document.getSelection().addRange(range);
+
+      document.execCommand('copy');
+
+      document.getSelection().removeAllRanges();
   };
 
   //-----------------------------------------------------------------------------

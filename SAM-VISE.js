@@ -15,6 +15,8 @@ app.controller('SAMVISEController', function ($scope) {
           mask: "00"
       };
   var lastSpot = 0;
+  
+  var selectedSpot = null;
 
   //-----------------------------------------------------------------------------
   function drawSpots() {
@@ -25,12 +27,19 @@ app.controller('SAMVISEController', function ($scope) {
       context.fillRect(spot.x, spot.y, spot.width, spot.height);
     });
     context.globalAlpha = 1;
+    if (selectedSpot != null) {
+        context.strokeStyle = 'Green';
+        context.setLineDash([2,3]);
+        context.lineWidth = "1";
+        context.strokeRect(selectedSpot.x, selectedSpot.y, selectedSpot.width, selectedSpot.height);
+    }
   }
 
   //-----------------------------------------------------------------------------
   function clearAll() {
     $scope.spots = [];
     lastSpot = 0;
+    selectedSpot = null;
     context.clearRect(0, 0, theCanvas.width, theCanvas.height);
   }
 
@@ -95,8 +104,17 @@ app.controller('SAMVISEController', function ($scope) {
 
   //-----------------------------------------------------------------------------
   $scope.onRemoveSpotClicked = function($index) {
+      if (selectedSpot == $scope.spots[$index]) {
+          selectedSpot = null;
+      }
     $scope.spots.splice($index, 1);
+    drawSpots();
   };
+
+  //-----------------------------------------------------------------------------
+  $scope.onRemoveAllClicked = function ($index) {
+      clearAll();
+  }
 
   //-----------------------------------------------------------------------------
   $scope.onMarkdownChanged = function() {
@@ -117,16 +135,30 @@ app.controller('SAMVISEController', function ($scope) {
       lastSpot++;
       $scope.spotName.template = getNextSpotName();
       lastSpot--;
-      markdown = "";
+      $scope.markdown = "";
       drawSpots();
     }
-
   };
+
+  //-----------------------------------------------------------------------------
+  $scope.onSelectSpotClicked = function ($index) {
+      selectedSpot = $scope.spots[$index];
+      drawSpots();
+  };
+ 
+  //----------------------------------------------------------------------------- 
+  $scope.spotRowClass = function($index){ 
+    if ($scope.spots[$index] == selectedSpot)
+      return "selectedSpot";
+    else 
+      return ""; 
+  }; 
 
   //-----------------------------------------------------------------------------
   $scope.onCopyClipboard = function () {
       resultMarkdown = document.querySelector('#resultMarkdown');
 
+      document.getSelection().removeAllRanges();
       range = document.createRange();
 
       range.selectNode(resultMarkdown);
@@ -159,8 +191,13 @@ app.controller('SAMVISEController', function ($scope) {
 
     //find which spot was clicked
     for (i = 0; i < $scope.spots.length; i++) {
-      if	(hitTest($scope.spots[i], mouseX, mouseY)) {
+      if (hitTest($scope.spots[i], mouseX, mouseY)) {
         dragging = true;
+        // change the selection
+        selectedSpot = $scope.spots[i];
+        $scope.$apply();
+        drawSpots();
+
         if (i > highestIndex) {
           //We will pay attention to the point on the object where the mouse is "holding" the object:
           dragHoldX = mouseX - $scope.spots[i].x;

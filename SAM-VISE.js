@@ -23,14 +23,20 @@ app.controller('SAMVISEController', function ($scope) {
     context.clearRect(0, 0, theCanvas.width, theCanvas.height);
     context.globalAlpha = 0.15;
     context.fillStyle = 'Green';
-    $scope.spots.forEach(function(spot){
+    $scope.spots.forEach(function (spot) {
       context.fillRect(spot.x, spot.y, spot.width, spot.height);
     });
     context.globalAlpha = 1;
+    context.strokeStyle = 'Red';
+    context.setLineDash([]);
+    context.lineWidth = "1";
+    $scope.spots.forEach(function (spot) {
+        context.strokeRect(spot.x, spot.y, spot.width, spot.height);
+    });
+    context.strokeStyle = 'Green';
+    context.setLineDash([2, 3]);
+    context.lineWidth = "2";
     if (selectedSpot != null) {
-        context.strokeStyle = 'Green';
-        context.setLineDash([2,3]);
-        context.lineWidth = "1";
         context.strokeRect(selectedSpot.x, selectedSpot.y, selectedSpot.width, selectedSpot.height);
     }
   }

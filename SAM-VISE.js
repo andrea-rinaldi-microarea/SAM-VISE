@@ -2,19 +2,24 @@ var app = angular.module('SAMVISE', [ ]);
 //=============================================================================
 // SAMVISEController - controller for SAM-VISE.html
 //=============================================================================
-app.controller('SAMVISEController', function ($scope) {
+app.controller('SAMVISEController', function ($scope, $filter) {
   var theCanvas = document.getElementById('theCanvas');
   var context = theCanvas.getContext("2d");
 
   $scope.markdown = "";
+  $scope.superSAMFormat = true;
   $scope.spots = [];
   $scope.fileName = "";
+  $scope.caption = "";
+  $scope.width = "";
+  $scope.height = "";
   $scope.spotName = {
           template: "SP01",
           radix: "SP",
           mask: "00"
       };
   var lastSpot = 0;
+  $scope.imageSize = null;
   
   var selectedSpot = null;
 
@@ -23,20 +28,14 @@ app.controller('SAMVISEController', function ($scope) {
     context.clearRect(0, 0, theCanvas.width, theCanvas.height);
     context.globalAlpha = 0.15;
     context.fillStyle = 'Green';
-    $scope.spots.forEach(function (spot) {
+    $scope.spots.forEach(function(spot){
       context.fillRect(spot.x, spot.y, spot.width, spot.height);
     });
     context.globalAlpha = 1;
-    context.strokeStyle = 'Red';
-    context.setLineDash([]);
-    context.lineWidth = "1";
-    $scope.spots.forEach(function (spot) {
-        context.strokeRect(spot.x, spot.y, spot.width, spot.height);
-    });
-    context.strokeStyle = 'Green';
-    context.setLineDash([2, 3]);
-    context.lineWidth = "2";
     if (selectedSpot != null) {
+        context.strokeStyle = 'Green';
+        context.setLineDash([2,3]);
+        context.lineWidth = "1";
         context.strokeRect(selectedSpot.x, selectedSpot.y, selectedSpot.width, selectedSpot.height);
     }
   }
@@ -46,6 +45,11 @@ app.controller('SAMVISEController', function ($scope) {
     $scope.spots = [];
     lastSpot = 0;
     selectedSpot = null;
+    $scope.fileName = "";
+    $scope.caption = "";
+    $scope.width = "";
+    $scope.height = "";
+      $scope.imageSize = null;
     context.clearRect(0, 0, theCanvas.width, theCanvas.height);
   }
 
@@ -63,6 +67,10 @@ app.controller('SAMVISEController', function ($scope) {
         image.onload = function() {
           theCanvas.height = this.height;
           theCanvas.width = this.width;
+          $scope.height = "" + this.height;
+          $scope.width = "" + this.width;
+          $scope.imageSize = { width: this.width, height: this.height };
+          $scope.$apply();
         };
         theCanvas.style.backgroundImage = "url(" +this.result + ")";
       };
@@ -109,6 +117,24 @@ app.controller('SAMVISEController', function ($scope) {
   };
 
   //-----------------------------------------------------------------------------
+  $scope.onChangeSize = function () {
+    theCanvas.height = $scope.height;
+    theCanvas.width = $scope.width;
+    $scope.imageSize = { width: $scope.width, height: $scope.height };
+    theCanvas.style.backgroundSize = "100% 100%";
+  }
+
+  //-----------------------------------------------------------------------------
+  $scope.onImageWidthChanged = function () {
+    $scope.height = Math.floor($scope.width * (theCanvas.height / theCanvas.width));
+  }
+
+  //-----------------------------------------------------------------------------
+  $scope.onImageHeightChanged = function () {
+    $scope.width = Math.floor($scope.height * (theCanvas.width / theCanvas.height));
+  }
+
+  //-----------------------------------------------------------------------------
   $scope.onRemoveSpotClicked = function($index) {
       if (selectedSpot == $scope.spots[$index]) {
           selectedSpot = null;
@@ -130,8 +156,42 @@ app.controller('SAMVISEController', function ($scope) {
        var match = "[IMGSPOT ";
        if (line.indexOf(match) != -1) {
          var coords = line.substr(0,line.length - 1).slice(match.length).split(/[-x ]/);
-         if (coords.length == 5)
-          newSpots.push({ name : coords[4].replace(/"/g,''), x : parseInt(coords[0]), y : parseInt(coords[1]), height : parseInt(coords[2]), width : parseInt(coords[3]) });
+         if (coords.length == 5) {
+            var spot = {};
+            if ($scope.superSAMFormat) {
+              spot = { name : coords[4].replace(/"/g,''), x : parseInt(coords[0]), y : parseInt(coords[1]), width : parseInt(coords[2]), height : parseInt(coords[3]) }
+            } else {
+              spot = { name : coords[4].replace(/"/g,''), x : parseInt(coords[0]), y : parseInt(coords[1]), height : parseInt(coords[2]), width : parseInt(coords[3]) }
+            }
+            newSpots.push(spot);
+         }
+       }
+      if (line.indexOf("[IMG ") != -1) {
+        var start = -1;
+        var stop = -1;
+        start = line.indexOf('"', 4);
+        if (start != -1) {
+          stop = line.indexOf('"', start + 1);
+        }
+        if ($scope.fileName == "" && start != -1 && stop != -1) {
+          $scope.fileName = line.substr(start + 1, stop - start - 1);
+        }
+        if (stop != -1) {
+          start = stop;
+        } else {
+          start = 4;
+        }
+        stop = line.indexOf(']', start + 1);
+        if ($scope.caption == "" && stop != -1) {
+          $scope.caption = line.substr(start + 1, stop - start - 1);
+          start = $scope.caption.search(/([0-9]*x[0-9]*)/);
+          if (start != -1) {
+            stop = $scope.caption.indexOf(' ', start + 1);
+            if (stop != -1) {
+              $scope.caption = $scope.caption.substr(stop + 1);
+            }
+          }
+         }
        }
     });
     if (newSpots.length > 0) {
@@ -151,6 +211,23 @@ app.controller('SAMVISEController', function ($scope) {
       selectedSpot = $scope.spots[$index];
       drawSpots();
   };
+
+  //-----------------------------------------------------------------------------
+  $scope.onConvertClicked = function () {
+    
+    for (i = 0; i < $scope.spots.length; i++) {
+      var dummy = $scope.spots[i].height;
+      $scope.spots[i].height = $scope.spots[i].width;
+      $scope.spots[i].width = dummy;
+    }        
+    
+    drawSpots();
+  }
+
+//-----------------------------------------------------------------------------
+  $scope.onSuperSAMFormatChanged = function () {
+    drawSpots();
+  }
  
   //----------------------------------------------------------------------------- 
   $scope.spotRowClass = function($index){ 
@@ -159,6 +236,16 @@ app.controller('SAMVISEController', function ($scope) {
     else 
       return ""; 
   }; 
+
+  //----------------------------------------------------------------------------- 
+  $scope.getSpotMarkdown = function(spot) {
+    //[IMGSPOT {{spot.x  | number : 0}}x{{spot.y | number : 0}}-{{spot.height| number : 0}}x{{spot.width| number : 0}} "{{spot.name}}"]
+    if ($scope.superSAMFormat) {
+      return "[IMGSPOT " + $filter('number')(spot.x, 0) + "x" + $filter('number')(spot.y, 0) + "-" + $filter('number')(spot.width, 0) + "x" + $filter('number')(spot.height, 0) + " " + spot.name + "]";
+    } else {
+      return "[IMGSPOT " + $filter('number')(spot.x, 0) + "x" + $filter('number')(spot.y, 0) + "-" + $filter('number')(spot.height, 0) + "x" + $filter('number')(spot.width, 0) + " " + spot.name + "]";
+    }
+  }
 
   //-----------------------------------------------------------------------------
   $scope.onCopyClipboard = function () {

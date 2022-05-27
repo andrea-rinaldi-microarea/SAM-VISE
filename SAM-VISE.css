@@ -27,6 +27,10 @@ table#spots td {
   border: solid 1px black;
 }
 
+.sizes {
+  width: 50px;
+}
+
 pre {
   margin-top: 0;
   margin-bottom: 0;
